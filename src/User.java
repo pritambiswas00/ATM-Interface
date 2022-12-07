@@ -1,7 +1,6 @@
 package src;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Array;
 import java.util.ArrayList;
 
 
@@ -27,7 +26,7 @@ public class User {
             System.err.println("Error from the User No such algorithms"+ error);
              error.printStackTrace();
         }
-        this.uuid=theBank.getNewUUID();
+        this.uuid=theBank.getNewUserUUID();
 
         //hashing algorithms MD5 for security algorithm;
         this.accounts= new ArrayList<>();
@@ -36,7 +35,56 @@ public class User {
         System.out.println("firstName = " + firstName + ", lastName = " + lastName + " UUID "+ uuid);
     }
 
-    public String addAccount(Account account){
-         return "";
+    public String getFirstName() {
+        return firstName;
     }
+
+    public String getUUID() {
+        return this.uuid;
+    }
+
+    public String addAccount(Account account){
+         this.accounts.add(account);
+         return "Account is opened for the User"+this.firstName+" "+this.lastName;
+    }
+
+    public boolean checkPinNumber(String pin){
+        try{
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            return  MessageDigest.isEqual(messageDigest.digest(pin.getBytes()), this.pinNumber);
+        }catch(NoSuchAlgorithmException error){
+            System.err.println("Error from the User No such algorithms"+ error);
+            error.printStackTrace();
+            System.exit(1);
+        }
+        return false;
+    }
+
+    public void printUserSummary(){
+        System.out.printf("\n\n %s's accounts summary ", this.firstName);
+        for(int i=0;i<this.accounts.size();i++){
+            System.out.printf("%d--> %s\n",i+1,this.accounts.get(i).getSummaryLine());
+        }
+    }
+
+    public int numberOfAccounts(){
+        return this.accounts.size();
+    }
+    public void printTransactionHistory(int accountNumber){
+        this.accounts.get(accountNumber).printTransactionHistory();
+    }
+
+    public double getLeftAccountBalance(int fromAccount){
+         return this.accounts.get(fromAccount).getBalance();
+    }
+
+    public void processTrasaction(int accountIndex, double amount, String note){
+            this.accounts.get(accountIndex).addTransaction(amount, note);
+    }
+
+    public String getAccountUUID(int accountIndex){
+          return this.accounts.get(accountIndex).getUUID();
+    }
+
+
 }
